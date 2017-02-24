@@ -11,8 +11,4 @@ public class DeleteCommand extends AbstractCommand {
     public void execute() {
         System.out.println("DeleteCommand execute()");
     }
-
-    public void setNumber(String number) {
-        this.number = number;
-    }
 }

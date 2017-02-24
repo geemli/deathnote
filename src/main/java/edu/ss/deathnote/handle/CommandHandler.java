@@ -1,11 +1,10 @@
 package edu.ss.deathnote.handle;
 
 import edu.ss.deathnote.option.Option;
-import edu.ss.deathnote.option.command.AbstractCommand;
-import edu.ss.deathnote.option.command.CreateCommand;
-import edu.ss.deathnote.option.command.DeleteCommand;
+import edu.ss.deathnote.option.command.*;
 import edu.ss.deathnote.option.description.CommandDescription;
 
+import java.lang.reflect.Field;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.regex.Pattern;
@@ -15,45 +14,45 @@ import java.util.regex.Pattern;
  */
 public class CommandHandler {
 
-    AbstractCommand command;
-
-    Set<Option> createOptions;
-    Set<Option> readOptions;
-    Set<Option> updateOptions;
-    Set<Option> deleteOptions;
-    Set<Option> sortOptions;
-
-    CommandDescription createCommandDescription;
-    CommandDescription readCommandDescription;
-    CommandDescription updateCommandDescription;
-    CommandDescription deleteCommandDescription;
-    CommandDescription sortCommandDescription;
+//    AbstractCommand command;
+    Set<CommandDescription> commands = new HashSet<>();
 
     public CommandHandler() {
-        createOptions = new HashSet<>();createOptions.add(new Option("name", true, "user's name"));createOptions.add(new Option("number", true, "user's number"));createOptions.add(new Option("date", false, "date of created"));
-        createCommandDescription = new CommandDescription("add", "add note", "add", createOptions);
+        Set<Option> createOptions = new HashSet<>();
+        createOptions.add(new Option("name", true, "user's name"));
+        createOptions.add(new Option("number", true, "user's number"));
+        createOptions.add(new Option("date", false, "date of created"));
+        CommandDescription createCommandDescription = new CommandDescription("add", "add note", new CreateCommand());
 
-        deleteOptions = new HashSet<>();deleteOptions.add(new Option("number", true, "user's number"));
-        deleteCommandDescription = new CommandDescription("delete", "delete note", "delete", deleteOptions);
+        Set<Option> deleteOptions = new HashSet<>();
+        deleteOptions.add(new Option("number", true, "user's number"));
+        CommandDescription deleteCommandDescription = new CommandDescription("delete", "delete note", new DeleteCommand());
+
+        Set<Option> readOptions = new HashSet<>();
+        readOptions.add(new Option("number", true, "number"));
+        CommandDescription readCommandDescription = new CommandDescription("read", "read note", new ReadCommand());
+
+        Set<Option> updateOptions = new HashSet<>();
+        CommandDescription updateCommandDescription = new CommandDescription("update", "update note", new UpdateCommand());
+
+        Set<Option> sortOptions = new HashSet<>();
+        CommandDescription sortCommandDescription = new CommandDescription("sort", "sort note", new SortCommand());
+
+        commands.add(createCommandDescription);
+        commands.add(readCommandDescription);
+        commands.add(updateCommandDescription);
+        commands.add(deleteCommandDescription);
+        commands.add(sortCommandDescription);
     }
 
     public void handle(String[] args) {
         for (String arg : args) {
-            System.out.println(arg);
-            if (Pattern.matches("\\w+", arg)) {
-                if (arg.equals(createCommandDescription.getName())) {
-                    command = new CreateCommand();
-                    System.out.println("CreateCommand");
-                    command.execute();
-
-                } else if (arg.equals(deleteCommandDescription.getName())) {
-                    command = new DeleteCommand();
-                } else {
-                    throw new IllegalArgumentException("no such command");
+            for(CommandDescription cd : commands) {
+                if(arg.equals(cd.getName())) {
+                    cd.execute();
                 }
-            } else {
-//                throw new IllegalArgumentException("no command with this pattern");
             }
+            System.out.println(arg);
         }
     }
 }
