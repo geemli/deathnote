@@ -4,7 +4,7 @@ import edu.ss.deathnote.option.Option;
 import edu.ss.deathnote.option.command.*;
 import edu.ss.deathnote.option.description.CommandDescription;
 
-import java.lang.reflect.Field;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.regex.Pattern;
@@ -54,43 +54,56 @@ public class CommandHandler {
         commands.add(sortCommandDescription);
     }
 
-    public void handle(String[] args) throws NoSuchFieldException, IllegalAccessException {
+    public void handle(Collection<String> args) throws NoSuchFieldException, IllegalAccessException {
+//        boolean commandExists = false;
         for (String arg : args) {
-            for (CommandDescription cd : commands) {
-                if (arg.equals(cd.getName())) {
-                    //рефлекщен добавить поля
-                    Class c = cd.getCommand().getClass();
-                    for (String arg2 : args) {
-                        if (Pattern.matches("--\\w+=\\w+", arg2)) {
-                            String prefix = "--";
-                            String equals = "=";
+            if (Pattern.matches("//w+", arg)) {
+                for (CommandDescription cd : commands) {
+                    if (arg.equals(cd.getName())) {
+//                        commandExists = true;
+                        args.remove(arg);
+                        command = cd.getCommand();
+                        command.execute();
+                    }
+//                    if (commandExists == false) {
+                    if (command == null) {
+                        throw new IllegalArgumentException("command " + arg + " is not exists. Try " + commands);
+                    } else {
+                        ValidatorAndCreator validatorAndCreator = new ValidatorAndCreator();
+                        validatorAndCreator.doIt();
+                    }
+                }
+                System.out.println(arg);
+            }
+        }
+    }
+}
 
-                            String expressionWithOutPrefix = arg2.substring(arg2.indexOf(prefix) + prefix.length());
+//                        Class c = cd.getCommand().getClass();
+//                        for (String arg2 : args) {
+//                            if (Pattern.matches("--\\w+=\\w+", arg2)) {
+//                                String prefix = "--";
+//                                String equals = "=";
 
-                            String argument = expressionWithOutPrefix.split("=")[0];
-                            String value = expressionWithOutPrefix.split("=")[1];
-                            System.out.println("**********" + argument + "   " + value);
-                            Field field = c.getDeclaredField(argument);
-                            field.setAccessible(true);
-                            field.set(cd.getCommand(), value);
-                            System.out.println("set " + field.getName() + "=" + field.get(cd.getCommand()));
+//                                String expressionWithOutPrefix = arg2.substring(arg2.indexOf(prefix) + prefix.length());
+
+//                                String argument = expressionWithOutPrefix.split("=")[0];
+//                                String value = expressionWithOutPrefix.split("=")[1];
+//                                System.out.println("**********" + argument + "   " + value);
+//                                Field field = c.getDeclaredField(argument);
+//                                field.setAccessible(true);
+//                                field.set(cd.getCommand(), value);
+//                                System.out.println("set " + field.getName() + "=" + field.get(cd.getCommand()));
 
 //                            реестр: рефлекшеном по интерфейсу или класс
 //                            фабрику команд сделать. с методом() createcommand factory. патерн команда.
 //                      СДЕЛАТЬ ВАЛИДАТОР+СОЗДАТЕЛЬ MAP<>. НА ВХОДЕ КОММАНД ДИСКРИПШН И КОЛЛЕКЦИЯ ОПШИНСОВ. ВЫБРАТЬ ОБЩЕЕ
 
-                        }
-                    }
-                    cd.getCommand().execute();
+//                            }
+//                        }
 //                    Field[] publicFields = c.getDeclaredFields();
 //                    for (Field field : publicFields) {
 //                        Class fieldType = field.getType();
 //                        System.out.println("Имя: " + field.getName());
 //                        System.out.println("Тип: " + fieldType.getName());
 //                    }
-                }
-            }
-            System.out.println(arg);
-        }
-    }
-}

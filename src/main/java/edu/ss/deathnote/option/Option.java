@@ -14,4 +14,16 @@ public class Option {
         this.required = required;
         this.description = description;
     }
+
+    public String getArg() {
+        return arg;
+    }
+
+    public boolean isRequired() {
+        return required;
+    }
+
+    public String getDescription() {
+        return description;
+    }
 }
