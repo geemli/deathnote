@@ -40,7 +40,7 @@ public class CommandDescription {
                 e.printStackTrace();
             }
 
-            System.out.println(entry.getKey() + entry.getValue());
+//            System.out.println(entry.getKey() + entry.getValue());
         });
         command.execute();
     }
