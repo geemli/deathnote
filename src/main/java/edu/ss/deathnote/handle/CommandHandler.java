@@ -6,6 +6,7 @@ import edu.ss.deathnote.option.description.CommandDescription;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
 
@@ -14,7 +15,7 @@ import java.util.regex.Pattern;
  */
 public class CommandHandler {
 
-    AbstractCommand command;
+    CommandDescription command;
     Set<CommandDescription> commands = new HashSet<>();
 
     public CommandHandler() {
@@ -55,27 +56,29 @@ public class CommandHandler {
     }
 
     public void handle(Collection<String> args) throws NoSuchFieldException, IllegalAccessException {
-//        boolean commandExists = false;
+        command = selectCommand(args);
+
+        ValidatorAndCreator validatorAndCreator = new ValidatorAndCreator();
+        Map<String, String> argsMap = validatorAndCreator.createCommandArgsMap(command.getOptions(), args);
+        command.execute(argsMap);
+    }
+
+    private CommandDescription selectCommand(Collection<String> args) {
+        if(args.isEmpty()) {
+            throw new IllegalArgumentException("no arguments");
+        }
         for (String arg : args) {
-            if (Pattern.matches("//w+", arg)) {
+            if (Pattern.matches("\\w+", arg)) {
                 for (CommandDescription cd : commands) {
-                    if (arg.equals(cd.getName())) {
-//                        commandExists = true;
+                    if (cd.getName().toLowerCase().equals(cd.getName())) {
                         args.remove(arg);
-                        command = cd.getCommand();
-                        command.execute();
-                    }
-//                    if (commandExists == false) {
-                    if (command == null) {
-                        throw new IllegalArgumentException("command " + arg + " is not exists. Try " + commands);
-                    } else {
-                        ValidatorAndCreator validatorAndCreator = new ValidatorAndCreator();
-                        validatorAndCreator.doIt();
+                        return cd;
                     }
                 }
-                System.out.println(arg);
+                throw new IllegalArgumentException("command " + arg + " is not exists. Try " + commands);
             }
         }
+        return null;
     }
 }
 

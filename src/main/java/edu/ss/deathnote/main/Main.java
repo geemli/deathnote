@@ -11,9 +11,8 @@ import java.util.*;
  */
 public class Main {
     public static void main(String[] args) throws NoSuchFieldException, IllegalAccessException {
-        System.out.println("hello world");
-        Collection<String> arguments = new LinkedList<>(Arrays.asList());
         args = new String[]{ "create", "--name=dima", "--number=666"};
+        Collection<String> arguments = new ArrayList<>(Arrays.asList(args));
         if (args.length > 0) {
             CommandHandler handler = new CommandHandler();
             handler.handle(arguments);

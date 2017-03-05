@@ -18,6 +18,6 @@ public class CreateCommand extends AbstractCommand {
         }
 
         System.out.println("CreateCommand execute() with param: name = " + name + " and number = " + number);
-        System.out.println(file + "   " + charset);
+//        System.out.println(file + "   " + charset);
     }
 }
