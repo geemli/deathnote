@@ -24,24 +24,7 @@ public class CommandDescription {
         this.options = options;
     }
 
-    public void execute(Map<String, String> args) {
-        if(command == null) {
-            throw new IllegalStateException("command is null. sorry ;(");
-        }
-
-        Class c = command.getClass();
-
-        args.entrySet().forEach(entry -> {
-            try {
-                Field temp = c.getDeclaredField(entry.getKey());
-                temp.setAccessible(true);
-                temp.set(command, entry.getValue());
-            } catch (NoSuchFieldException | IllegalAccessException e) {
-                e.printStackTrace();
-            }
-
-//            System.out.println(entry.getKey() + entry.getValue());
-        });
+    public void execute() {
         command.execute();
     }
 

@@ -4,6 +4,7 @@ import edu.ss.deathnote.option.Option;
 import edu.ss.deathnote.option.command.*;
 import edu.ss.deathnote.option.description.CommandDescription;
 
+import java.lang.reflect.Field;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Map;
@@ -19,6 +20,10 @@ public class CommandHandler {
     Set<CommandDescription> commands = new HashSet<>();
 
     public CommandHandler() {
+        Set<Option> globalOptions = new HashSet<>();
+        globalOptions.add(new Option("file", false, "SELECT FILE TO CRUD"));
+        globalOptions.add(new Option("charset", false, "charset"));
+
         Set<Option> createOptions = new HashSet<>();
         createOptions.add(new Option("name", true, "user's name"));
         createOptions.add(new Option("number", true, "user's number"));
@@ -60,9 +65,26 @@ public class CommandHandler {
 
         ValidatorAndCreator validatorAndCreator = new ValidatorAndCreator();
         Collection<Option> commandOptions = command.getOptions();
-        System.out.println(commandOptions.size() + command.getName());
+//        System.out.println(commandOptions.size() + command.getName());
         Map<String, String> argsMap = validatorAndCreator.createCommandArgsMap(commandOptions, args);
-        command.execute(argsMap);
+
+        if(command == null) {
+            throw new IllegalStateException("command is null. sorry ;(");
+        }
+        Class c = command.getCommand().getClass();
+        argsMap.entrySet().forEach(entry -> {
+            try {
+                Field temp = c.getDeclaredField(entry.getKey());
+                temp.setAccessible(true);
+                temp.set(command.getCommand(), entry.getValue());
+            } catch (NoSuchFieldException | IllegalAccessException e) {
+                e.printStackTrace();
+            }
+
+//            System.out.println(entry.getKey() + entry.getValue());
+        });
+
+        command.execute();
     }
 
     private CommandDescription selectCommand(Collection<String> args) {

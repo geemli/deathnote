@@ -9,16 +9,16 @@ import java.util.Collection;
  */
 public abstract class AbstractCommand implements Command {
 
-//    protected Collection<Option> options;
+    protected Collection<Option> globalOptions;
 
     @Override
     abstract public void execute();
 
-//    public Collection<Option> getOptions() {
-//        return options;
-//    }
-//
-//    public void setOptions(Collection<Option> options) {
-//        this.options = options;
-//    }
+    public Collection<Option> getOptions() {
+        return globalOptions;
+    }
+
+    public void setOptions(Collection<Option> options) {
+        this.globalOptions = options;
+    }
 }
