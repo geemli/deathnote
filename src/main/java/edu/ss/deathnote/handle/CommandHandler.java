@@ -59,7 +59,9 @@ public class CommandHandler {
         command = selectCommand(args);
 
         ValidatorAndCreator validatorAndCreator = new ValidatorAndCreator();
-        Map<String, String> argsMap = validatorAndCreator.createCommandArgsMap(command.getOptions(), args);
+        Collection<Option> commandOptions = command.getOptions();
+        System.out.println(commandOptions.size() + command.getName());
+        Map<String, String> argsMap = validatorAndCreator.createCommandArgsMap(commandOptions, args);
         command.execute(argsMap);
     }
 
@@ -70,7 +72,7 @@ public class CommandHandler {
         for (String arg : args) {
             if (Pattern.matches("\\w+", arg)) {
                 for (CommandDescription cd : commands) {
-                    if (cd.getName().toLowerCase().equals(cd.getName())) {
+                    if (cd.getName().toLowerCase().equals(arg)) {
                         args.remove(arg);
                         return cd;
                     }
